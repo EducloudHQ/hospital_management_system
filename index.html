@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hope Valley - Hospital Management Portal</title>
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --accent-color: #0d9488; /* Teal 600 */
+      --accent-hover: #0f766e; /* Teal 700 */
+      --accent-light: #f0fdfa; /* Teal 50 */
+      --accent-border: #99f6e4; /* Teal 200 */
+      --danger-color: #e11d48;
+      --danger-hover: #be123c;
+      --success-color: #10b981;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Header & Navigation */
+    header {
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--accent-color);
+    }
+
+    .brand svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    #menu-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Dev Role Switcher Panel */
+    .role-switcher-banner {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #ffffff;
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-bottom: 1px solid #334155;
+    }
+
+    .role-switcher-banner select {
+      background-color: #334155;
+      color: #ffffff;
+      border: 1px solid #475569;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .role-switcher-banner select:hover {
+      background-color: #475569;
+    }
+
+    /* Container layouts */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .welcome-section {
+      margin-bottom: 24px;
+      padding: 24px;
+      background: linear-gradient(to right, var(--accent-color), #0f766e);
+      color: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-section::after {
+      content: '';
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
+    .welcome-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* Auth state message */
+    #signInMessage {
+      text-align: center;
+      padding: 60px 20px;
+      max-width: 480px;
+      margin: 40px auto;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+    }
+
+    #signInMessage h2 {
+      color: var(--accent-color);
+      margin-bottom: 12px;
+    }
+
+    #signInMessage p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    /* General Form elements */
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 0.95rem;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+
+    button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      border: none;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* Cards & Layout Grids */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    /* Table styles */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--bg-primary);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-scheduled {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-cancelled {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-completed {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-accepted {
+      background-color: #f3e8ff;
+      color: #6b21a8;
+    }
+
+    /* Floating Chat Button */
+    .chat-toggle-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-color), #0f766e);
+      color: white;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 998;
+      border: none;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .chat-toggle-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .chat-toggle-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    /* Chat Drawer Slider */
+    .chat-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 420px;
+      max-width: 100%;
+      height: 100%;
+      background-color: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .chat-drawer.open {
+      transform: translateX(0);
+    }
+
+    .chat-header {
+      padding: 16px 20px;
+      background: linear-gradient(to right, var(--accent-color), #0f766e);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .chat-close-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      font-size: 1.5rem;
+      line-height: 1;
+      padding: 4px;
+      font-weight: 400;
+    }
+
+    .chat-close-btn:hover {
+      color: white;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background-color: #f8fafc;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-bubble-user {
+      align-self: flex-end;
+      background-color: var(--accent-color);
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+
+    .chat-bubble-assistant {
+      align-self: flex-start;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border-bottom-left-radius: 2px;
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-bubble-system {
+      align-self: center;
+      background-color: #e2e8f0;
+      color: #475569;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      border-radius: 9999px;
+    }
+
+    .chat-bubble p {
+      margin-bottom: 6px;
+    }
+
+    .chat-bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .chat-bubble code {
+      font-family: monospace;
+      background: #f1f5f9;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    .chat-bubble-user code {
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+    }
+
+    .chat-input-area {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+      background-color: var(--bg-secondary);
+    }
+
+    .chat-input-area input {
+      flex: 1;
+    }
+
+    .chat-input-area button {
+      padding: 10px 16px;
+    }
+
+    /* Backdrop for chat drawer */
+    .chat-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+    }
+
+    .chat-backdrop.open {
+      display: block;
+    }
+
+    /* Tabs navigation */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      background-color: transparent;
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+    }
+
+    .tab-btn.active {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border-color: var(--accent-border);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background-color: #f1f5f9;
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Developer Role Switcher (Workshop Specific) -->
+  <div class="role-switcher-banner" id="dev-banner" style="display: none;">
+    <span>🛠️ Workshop Sandbox Mode &mdash; Active Role: <strong id="active-role-text">Patient</strong></span>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span>Switch View:</span>
+      <select id="role-select">
+        <option value="patient">Patient Dashboard</option>
+        <option value="doctor">Doctor Dashboard</option>
+        <option value="admin">Hospital Admin</option>
+      </select>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+      </svg>
+      <span>Hope Valley Portal</span>
+    </div>
+    <div id="menu-bar"></div>
+  </header>
+
+  <main>
+    <div id="signInMessage">
+      <h2>Welcome to Hope Valley</h2>
+      <p>Your secure hospital management and care portal. Sign in to access your appointments, diagnostic records, and settings.</p>
+    </div>
+    <div id="auth"></div>
+    <div id="app"></div>
+  </main>
+
+  <!-- Chat Drawer Backdrop -->
+  <div class="chat-backdrop" id="chat-backdrop"></div>
+
+  <!-- Chat Drawer slider -->
+  <div class="chat-drawer" id="chat-drawer">
+    <div class="chat-header">
+      <h3>🏥 AI Reception Desk</h3>
+      <button class="chat-close-btn" id="chat-close">&times;</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <!-- Chat bubbles injected by JavaScript -->
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Ask about ER wait times, guidelines, or book an appointment..." />
+      <button class="btn-primary" id="chat-send">Send</button>
+    </div>
+  </div>
+
+  <!-- Floating Chat button -->
+  <button class="chat-toggle-btn" id="chat-toggle" style="display: none;">
+    <svg viewBox="0 0 24 24">
+      <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+    </svg>
+  </button>
+
+  <script type="module" src="/src/index.ts"></script>
+</body>
+</html>
